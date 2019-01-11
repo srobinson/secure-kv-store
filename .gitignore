@@ -1,0 +1,8 @@
+certs.sh
+db.sh
+docker-compose.yml
+Dockerfile
+node_modules
+notes
+pg_hba.conf
+yarn-error.log
