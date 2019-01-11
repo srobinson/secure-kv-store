@@ -11,3 +11,5 @@ cache:
   yarn: true
 git:
   quiet: true
+install:
+- yarn

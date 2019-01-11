@@ -11,9 +11,6 @@ class SecureKVStore {
   }
 
   get(token, id) {
-    console.log("DB", this.db);
-    console.log("...");
-
     const bufferedKey = Buffer.alloc(32, token, "hex");
     const records = Object.keys(this.db)
       .filter(key => {
