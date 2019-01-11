@@ -1,4 +1,4 @@
-const Crypto = require("./Crypto");
+const Crypto = require("./crypto");
 
 class SecureKVStore {
   constructor() {
