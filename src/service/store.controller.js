@@ -4,7 +4,7 @@ require("../config");
 const AUTH_TOKEN_HEADER = process.env.AUTH_TOKEN_HEADER;
 
 class SecureKVStoreController {
-  generateKey(req, res) {
+  async generateKey(req, res) {
     try {
       const secret = req.query.secret;
       if (!secret) {
@@ -16,7 +16,7 @@ class SecureKVStoreController {
           ],
         });
       }
-      const key = store.generateKey(secret);
+      const key = await store.generateKey(secret);
       res.status(200).json({
         key,
       });
@@ -28,7 +28,7 @@ class SecureKVStoreController {
     }
   }
 
-  search(req, res) {
+  async search(req, res) {
     try {
       const token = req.headers[AUTH_TOKEN_HEADER];
       const q = req.query.q;
@@ -44,7 +44,7 @@ class SecureKVStoreController {
           ],
         });
       }
-      const data = store.get(token, q);
+      const data = await store.search(token, q);
       res.status(200).json(data);
     } catch (e) {
       console.log(e);
@@ -54,7 +54,7 @@ class SecureKVStoreController {
     }
   }
 
-  store(req, res) {
+  async save(req, res) {
     try {
       const token = req.headers[AUTH_TOKEN_HEADER];
       const value = req.body;
@@ -85,7 +85,16 @@ class SecureKVStoreController {
           ],
         });
       }
-      store.put(token, id, "json", value);
+      if (id.match(/\*$/)) {
+        return res.status(400).json({
+          validations: [
+            {
+              id: "id cannot terminate with '*'",
+            },
+          ],
+        });
+      }
+      await store.save(token, id, "json", value);
       res.status(200).json({
         upload: "OK",
       });
@@ -97,7 +106,7 @@ class SecureKVStoreController {
     }
   }
 
-  upload(req, res) {
+  async upload(req, res) {
     try {
       const token = req.headers[AUTH_TOKEN_HEADER];
       const files = req.files;
@@ -129,7 +138,7 @@ class SecureKVStoreController {
       }
       const file = files.file;
       const value = file.data.toString("base64");
-      store.put(token, id, file.mimetype, value);
+      await store.save(token, id, file.mimetype, value);
       res.send({
         status: "OK",
       });

@@ -1,18 +1,18 @@
 const Router = require("express");
-const controller = require("./service/controller");
+const controller = require("./service/store.controller");
 const api = Router();
 
 api
+  // helper endpoint - presume we assign a token on signup?
   .get("/generate-key", controller.generateKey)
-  .get("/search", controller.search)
-  .post("/store", controller.store)
-  .post("/upload", controller.upload)
+  .get("/store", controller.search)
+  .post("/store", controller.save)
   .get("/", (_, res) => {
     res.json({
       status: "OK",
     });
   })
-  .get("*", (req, res) => {
+  .all("*", (req, res) => {
     res.status(404).json({
       error: `ResourceNoFound: ${req.originalUrl}`,
     });

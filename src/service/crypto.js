@@ -4,9 +4,9 @@ const algorithm = "aes-256-cbc";
 require("../config");
 
 class Crypto {
-  static scryptSync(token) {
+  static scryptSync(secret) {
     const key = crypto.pbkdf2Sync(
-      token, // <string> | <Buffer> | <TypedArray> | <DataView>
+      secret, // <string> | <Buffer> | <TypedArray> | <DataView>
       process.env.SALT, //  <string> | <Buffer> | <TypedArray> | <DataView>
       100000, // iterations <number>
       64, // keylen <number>
@@ -29,11 +29,12 @@ class Crypto {
     return iv.toString("hex") + ":" + encrypted.toString("hex");
   }
 
-  static decrypt(bkey, encrypted) {
+  static decrypt(token, encrypted) {
+    const bufferedKey = Buffer.alloc(32, token, "hex");
     const parts = encrypted.split(":");
     const iv = Buffer.alloc(16, parts[0], "hex");
     const encryptedText = Buffer.from(parts[1], "hex");
-    const decipher = crypto.createDecipheriv(algorithm, bkey, iv);
+    const decipher = crypto.createDecipheriv(algorithm, bufferedKey, iv);
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return JSON.parse(decrypted.toString());

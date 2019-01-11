@@ -13,3 +13,5 @@ git:
   quiet: true
 install:
 - yarn
+before_script:
+- node db.create.js

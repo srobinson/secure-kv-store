@@ -62,6 +62,16 @@ describe("test the store controller", () => {
     expect(response.body).toEqual({validations: [{id: "no id supplied"}]});
   });
 
+  test("store::ending-with::*::400", async () => {
+    const id = "data-*";
+    const response = await request(App)
+      .post(`/store?id=${id}`)
+      .send(json)
+      .set("x-kvsec-token", encryption_key);
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({validations: [{id: "id cannot terminate with '*'"}]});
+  });
+
   test("store:with::data-1::200", async () => {
     const id = "data-1";
     const response = await request(App)
@@ -83,14 +93,14 @@ describe("test the store controller", () => {
   });
 
   test("search::with::no-header::200", async () => {
-    const response = await request(App).get(`/search`);
+    const response = await request(App).get(`/store`);
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([]);
   });
 
   test("search::with::no-query::400", async () => {
     const response = await request(App)
-      .get(`/search`)
+      .get(`/store`)
       .set("x-kvsec-token", encryption_key);
     expect(response.statusCode).toBe(400);
     expect(response.body).toEqual({validations: [{q: "no search criteria supplied"}]});
@@ -99,7 +109,7 @@ describe("test the store controller", () => {
   test("search::with::data-1::200", async () => {
     const id = "data-1";
     const response = await request(App)
-      .get(`/search?q=${id}`)
+      .get(`/store?q=${id}`)
       .set("x-kvsec-token", encryption_key);
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([{id: "data-1", type: "json", value: json}]);
@@ -108,7 +118,7 @@ describe("test the store controller", () => {
   test("search::with::data-2::200", async () => {
     const id = "data-2";
     const response = await request(App)
-      .get(`/search?q=${id}`)
+      .get(`/store?q=${id}`)
       .set("x-kvsec-token", encryption_key);
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([{id: "data-2", type: "json", value: json2}]);
@@ -117,7 +127,7 @@ describe("test the store controller", () => {
   test("search::with::data-*::200", async () => {
     const id = "data-*";
     const response = await request(App)
-      .get(`/search?q=${id}`)
+      .get(`/store?q=${id}`)
       .set("x-kvsec-token", encryption_key);
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([
@@ -129,9 +139,31 @@ describe("test the store controller", () => {
   test("search::with::data-not-found::200", async () => {
     const id = "data-not-found";
     const response = await request(App)
-      .get(`/search?q=${id}`)
+      .get(`/store?q=${id}`)
       .set("x-kvsec-token", encryption_key);
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([]);
+  });
+
+  test("store:with::data-2::AS::data-1::200", async () => {
+    const id = "data-2";
+    const response = await request(App)
+      .post(`/store?id=${id}`)
+      .send(json)
+      .set("x-kvsec-token", encryption_key);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({upload: "OK"});
+  });
+
+  test("search::with::data-*::200", async () => {
+    const id = "data-*";
+    const response = await request(App)
+      .get(`/store?q=${id}`)
+      .set("x-kvsec-token", encryption_key);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([
+      {id: "data-1", type: "json", value: json},
+      {id: "data-2", type: "json", value: json},
+    ]);
   });
 });

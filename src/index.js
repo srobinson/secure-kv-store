@@ -9,7 +9,7 @@ App.listen(port, e => {
   if (e) {
     return console.error(e);
   }
-  console.info(`😊 crypto-service listening on port [${port}]`);
+  console.info(`😊 secure-kv-store listening on port [${port}]`);
 });
 
 process.on("unhandledRejection", e => {

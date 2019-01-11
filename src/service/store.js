@@ -1,35 +1,28 @@
 const Crypto = require("./crypto");
+const dao = require("./store.dao");
 
 class SecureKVStore {
-  constructor() {
-    this.db = {};
-  }
-
-  generateKey(token) {
-    const key = Crypto.scryptSync(token);
+  generateKey(secret) {
+    const key = Crypto.scryptSync(secret);
     return key;
   }
 
-  get(token, id) {
-    const bufferedKey = Buffer.alloc(32, token, "hex");
-    const records = Object.keys(this.db)
-      .filter(key => {
-        const parts = key.split(":");
-        return parts[0] === token && parts[1].startsWith(id.replace("*", ""));
-      })
-      .map(key => {
-        const encrypted = this.db[key];
-        return Crypto.decrypt(bufferedKey, encrypted);
-      });
-    return records;
+  async search(token, id) {
+    const idKey = `${token}:${id}`;
+    const records = await dao.search(idKey);
+    const decrypted = records.map(rec => {
+      const value = Crypto.decrypt(token, rec.value);
+      return {
+        ...value,
+      };
+    });
+    return decrypted;
   }
 
-  put(token, id, type, value) {
+  async save(token, id, type, value) {
     const idKey = `${token}:${id}`;
     const encrypted = Crypto.encrypt(token, id, type, value);
-    Object.assign(this.db, {
-      [idKey]: encrypted,
-    });
+    await dao.createOrUpdate(idKey, encrypted);
   }
 }
 

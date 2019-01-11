@@ -11,8 +11,14 @@ yarn
 # run tests
 yarn test
 
-# run dev server
-yarn dev
+# run express server
+yarn start
+
+# I'm running a docker image for PG
+docker run --rm --name postgres -e POSTGRES_PASSWORD=docker -p 5432:5432 postgres
+
+# create db tables
+node db.create.js
 ```
 
 ## Manual tests
@@ -55,12 +61,10 @@ curl -XPOST -s -H "x-kvsec-token: $key" -H "Content-Type: application/json" -d "
 
 # search data
 
-curl XGET -s -H "x-kvsec-token: $key" http://localhost:3001/search?q=data-1
+curl -XGET -s -H "x-kvsec-token: $key" http://localhost:3001/store?q=data-1
 
-curl XGET -s -H "x-kvsec-token: $key" http://localhost:3001/search?q=data-2
+curl -XGET -s -H "x-kvsec-token: $key" http://localhost:3001/store?q=data-2
 
-curl XGET -s -H "x-kvsec-token: $key" http://localhost:3001/search?q=data-*
+curl -XGET -s -H "x-kvsec-token: $key" http://localhost:3001/store?q=data-*
 
 ```
-
-

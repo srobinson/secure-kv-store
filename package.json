@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "test": "jest --runInBand --forceExit --env=node --colors",
+    "start": "NODE_ENV=production node src/index.js",
     "test:watch": "jest --runInBand --forceExit --env=node --colors --watchAll"
   },
   "author": "Stuart Robinson <stuart@alphab.io> (http://alphab.io)",
@@ -17,8 +18,11 @@
     "cors": "2.8.5",
     "dotenv": "6.2.0",
     "express": "4.16.4",
+    "express-async-errors": "3.1.1",
     "express-fileupload": "1.1.1-alpha.1",
-    "helmet": "3.15.0"
+    "helmet": "3.15.0",
+    "moment": "2.23.0",
+    "pg": "7.7.1"
   },
   "devDependencies": {
     "jest": "23.6.0",
