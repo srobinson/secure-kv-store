@@ -9,6 +9,10 @@ pool.on("connect", () => {
   console.log("connected to the db");
 });
 
+pool.on("remove", () => {
+  process.exit();
+});
+
 let queryText = `
 CREATE TABLE IF NOT EXISTS
   store(
@@ -19,13 +23,5 @@ CREATE TABLE IF NOT EXISTS
   );
   create unique index store_unique_idx on store (id);`;
 
-pool
-  .query(queryText)
-  .then(res => {
-    console.log(res);
-    pool.end();
-  })
-  .catch(err => {
-    console.log(err);
-    pool.end();
-  });
+pool.query(queryText);
+pool.end();

@@ -26,6 +26,9 @@ class Crypto {
     });
     let encrypted = cipher.update(value);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
+    // since the iv is randomly generated,
+    // store it along with the encrypted value
+    // so it can be retrieved for use when decrypting
     return iv.toString("hex") + ":" + encrypted.toString("hex");
   }
 
