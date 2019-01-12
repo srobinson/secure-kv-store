@@ -6,8 +6,8 @@ const pool = new Pool({
   connectionString: process.env.PG_CONNECTION_URL,
 });
 
-const query = async (text, params) => {
-  return await pool.query(text, params);
+const query = async (query, params) => {
+  return await pool.query(query, params);
 };
 
 module.exports = {

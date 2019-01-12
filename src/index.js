@@ -5,17 +5,17 @@ require("./config");
 
 const port = process.env.PORT || 3001;
 
-App.listen(port, e => {
+App.listen(port, (e) => {
   if (e) {
     return console.error(e);
   }
   console.info(`😊 secure-kv-store listening on port [${port}]`);
 });
 
-process.on("unhandledRejection", e => {
+process.on("unhandledRejection", (e) => {
   console.error(e);
 });
 
-process.on("SIGINT", function() {
+process.on("SIGINT", () => {
   process.exit();
 });

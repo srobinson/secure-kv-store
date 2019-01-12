@@ -8,17 +8,17 @@
 # install dependencies
 yarn
 
-# run tests
-yarn test
-
-# run express server
-yarn start
-
 # I'm running a docker image for PG
 docker run --rm --name postgres -e POSTGRES_PASSWORD=docker -p 5432:5432 postgres
 
 # create db tables
 node db.create.js
+
+# run tests
+yarn test
+
+# run express server
+yarn start
 ```
 
 ## Manual tests

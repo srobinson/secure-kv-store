@@ -1,0 +1,17 @@
+extends: ["google", "plugin:security/recommended"]
+plugins:
+  ["security"]
+env:
+  node: true
+  es6: true
+parserOptions:
+  ecmaVersion: 9
+  ecmaFeatures:
+    arrowFunctions: true
+    destructuring: true
+  sourceType: "module"
+rules:
+  quotes: ["error", "double"]
+  indent: ["error", 2]
+  max-len: ["error", 100, 2]
+

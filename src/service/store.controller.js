@@ -1,21 +1,22 @@
 const store = require("./store");
+
 require("../config");
 
-const AUTH_TOKEN_HEADER = process.env.AUTH_TOKEN_HEADER;
-
+/**
+ * Controller Class for handling @see Store requests
+ */
 class SecureKVStoreController {
+  /**
+   * generateKey Endpoint for generating hashed auth keys
+   *
+   * @param {express.Request} req expects [
+   *  param: secret = the token to be hashed
+   * ]
+   * @param {express.Response} res json document container auth key [key]
+   */
   async generateKey(req, res) {
     try {
       const secret = req.query.secret;
-      if (!secret) {
-        return res.status(400).json({
-          validations: [
-            {
-              secret: "secret is required",
-            },
-          ],
-        });
-      }
       const key = await store.generateKey(secret);
       res.status(200).json({
         key,
@@ -28,22 +29,19 @@ class SecureKVStoreController {
     }
   }
 
+  /**
+   * Endpoint for retrieving data
+   *
+   * @param {express.Request} req expects [
+   *  header: ${AUTH_TOKEN_HEADER},
+   *  param: q = the search query
+   * ]
+   * @param {express.Response} res json array containing retrieved data
+   */
   async search(req, res) {
     try {
-      const token = req.headers[AUTH_TOKEN_HEADER];
+      const token = req.headers["x-kvsec-token"];
       const q = req.query.q;
-      if (!token) {
-        return res.status(200).json([]);
-      }
-      if (!q) {
-        return res.status(400).json({
-          validations: [
-            {
-              q: "no search criteria supplied",
-            },
-          ],
-        });
-      }
       const data = await store.search(token, q);
       res.status(200).json(data);
     } catch (e) {
@@ -54,33 +52,26 @@ class SecureKVStoreController {
     }
   }
 
+  /**
+   * Endpoint for storing data
+   *
+   * @param {express.Request} req expects [
+   *  header: ${AUTH_TOKEN_HEADER}
+   *  param: id = reference to data used for retrieval
+   *  body: data to be stored
+   * ]
+   * @param {express.Response} res json document containing status of operation
+   */
   async save(req, res) {
     try {
-      const token = req.headers[AUTH_TOKEN_HEADER];
+      const token = req.headers["x-kvsec-token"];
       const value = req.body;
       const id = req.query.id;
-
-      if (!token) {
-        return res.status(401).json({
-          error: {
-            auth: "not authorised",
-          },
-        });
-      }
       if (!(value && Object.keys(value).length)) {
         return res.status(400).json({
           validations: [
             {
               value: "nothing to store",
-            },
-          ],
-        });
-      }
-      if (!id) {
-        return res.status(400).json({
-          validations: [
-            {
-              id: "no id supplied",
             },
           ],
         });
@@ -106,9 +97,15 @@ class SecureKVStoreController {
     }
   }
 
+  /**
+   * Endpoint for storing uploaded files/binary data [not required]
+   *
+   * @param {express.Request} req
+   * @param {express.Response} res
+   */
   async upload(req, res) {
     try {
-      const token = req.headers[AUTH_TOKEN_HEADER];
+      const token = req.headers["x-kvsec-token"];
       const files = req.files;
       const id = req.query.id;
       if (!token) {

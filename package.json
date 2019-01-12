@@ -7,6 +7,8 @@
   "private": true,
   "scripts": {
     "dev": "nodemon src/index.js",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "test": "jest --runInBand --forceExit --env=node --colors",
     "start": "NODE_ENV=production node src/index.js",
     "test:watch": "jest --runInBand --forceExit --env=node --colors --watchAll"
@@ -14,17 +16,20 @@
   "author": "Stuart Robinson <stuart@alphab.io> (http://alphab.io)",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "1.18.3",
     "cors": "2.8.5",
     "dotenv": "6.2.0",
     "express": "4.16.4",
     "express-async-errors": "3.1.1",
     "express-fileupload": "1.1.1-alpha.1",
+    "express-validator": "5.3.1",
     "helmet": "3.15.0",
     "moment": "2.23.0",
     "pg": "7.7.1"
   },
   "devDependencies": {
+    "eslint": "5.12.0",
+    "eslint-config-google": "0.11.0",
+    "eslint-plugin-security": "1.4.0",
     "jest": "23.6.0",
     "nodemon": "1.18.9",
     "supertest": "3.3.0"

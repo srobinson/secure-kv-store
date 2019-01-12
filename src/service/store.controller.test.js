@@ -1,3 +1,4 @@
+/* eslint-disable */
 const request = require("supertest");
 const App = require("../app");
 
@@ -26,10 +27,10 @@ const json2 = {
 };
 
 describe("test the store controller", () => {
-  test("generate-key::with::no-secret::401", async () => {
+  test("generate-key::with::no-secret::400", async () => {
     const response = await request(App).get("/generate-key");
     expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({validations: [{secret: "secret is required"}]});
+    expect(response.body).toEqual({"errors": [{"location": "query", "msg": "Invalid value", "param": "secret"}]});
   });
 
   test("generate-key::with::secret::200", async () => {
@@ -39,15 +40,19 @@ describe("test the store controller", () => {
     expect(response.body).toEqual({key: encryption_key});
   });
 
-  test("store::with::no-header::401", async () => {
-    const response = await request(App).post(`/store`);
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({error: {auth: "not authorised"}});
+  test("store::with::no-header::400", async () => {
+    const id = "data-1";
+    const response = await request(App)
+      .post(`/store?id=${id}`)
+      .send(json)
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({"errors": [{"location": "headers", "msg": "Invalid value", "param": "x-kvsec-token"}]});
   });
 
   test("store::with::no-body::400", async () => {
+    const id = "data-1";
     const response = await request(App)
-      .post(`/store`)
+      .post(`/store?id=${id}`)
       .set("x-kvsec-token", encryption_key);
     expect(response.statusCode).toBe(400);
     expect(response.body).toEqual({validations: [{value: "nothing to store"}]});
@@ -55,11 +60,11 @@ describe("test the store controller", () => {
 
   test("store::with::no-id::400", async () => {
     const response = await request(App)
-      .post(`/store`)
+      .post("/store")
       .send(json)
       .set("x-kvsec-token", encryption_key);
     expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({validations: [{id: "no id supplied"}]});
+    expect(response.body).toEqual({"errors": [{"location": "query", "msg": "Invalid value", "param": "id"}]});
   });
 
   test("store::ending-with::*::400", async () => {
@@ -93,17 +98,23 @@ describe("test the store controller", () => {
   });
 
   test("search::with::no-header::200", async () => {
-    const response = await request(App).get(`/store`);
+    const response = await request(App).get("/store");
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([]);
   });
 
-  test("search::with::no-query::400", async () => {
+    test("search::with::no-header::200", async () => {
+    const response = await request(App).get("/store");
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  test("search::with::no-query::200", async () => {
     const response = await request(App)
-      .get(`/store`)
+      .get("/store")
       .set("x-kvsec-token", encryption_key);
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({validations: [{q: "no search criteria supplied"}]});
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([]);
   });
 
   test("search::with::data-1::200", async () => {
