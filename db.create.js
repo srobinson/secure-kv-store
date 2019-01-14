@@ -14,14 +14,19 @@ pool.on("remove", () => {
 });
 
 let queryText = `
-CREATE TABLE IF NOT EXISTS
+BEGIN;
+CREATE TABLE
   store(
     id VARCHAR(256) NOT NULL,
     value TEXT NOT NULL,
+    deleted BIT DEFAULT 0::bit,
     created_date TIMESTAMP,
     modified_date TIMESTAMP
   );
-  create unique index store_unique_idx on store (id);`;
+  create index store_unique_idx on store (id);
+  create index store_unique_deletedx on store (deleted);
+COMMIT;
+`;
 
 pool.query(queryText);
 pool.end();

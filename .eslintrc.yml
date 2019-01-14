@@ -11,7 +11,8 @@ parserOptions:
     destructuring: true
   sourceType: "module"
 rules:
-  quotes: ["error", "double"]
+  arrow-parens: ["error", 2]
   indent: ["error", 2]
   max-len: ["error", 100, 2]
+  quotes: ["error", "double"]
 

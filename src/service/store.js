@@ -26,7 +26,7 @@ class SecureKVStore {
   async search(token, id) {
     const idKey = `${token}:${id}`;
     const records = await dao.search(idKey);
-    const decrypted = records.map((rec) => {
+    const decrypted = records.map(rec => {
       const value = Crypto.decrypt(token, rec.value);
       return {
         ...value,
@@ -47,7 +47,7 @@ class SecureKVStore {
   async save(token, id, type, value) {
     const idKey = `${token}:${id}`;
     const encrypted = Crypto.encrypt(token, id, type, value);
-    return await dao.createOrUpdate(idKey, encrypted);
+    return await dao.create(idKey, encrypted);
   }
 }
 

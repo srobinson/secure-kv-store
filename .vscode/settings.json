@@ -10,6 +10,7 @@
   "files.useExperimentalFileWatcher": true,
   "files.insertFinalNewline": true,
   "prettier.semi": false,
+  "prettier.arrowParens": "always",
   "search.exclude": {
     "**/.cache/**": true,
     "**/dist/**": true,
